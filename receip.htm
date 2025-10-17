@@ -1,0 +1,241 @@
+// Initialize items array
+let items = [];
+
+// DOM elements
+const itemNameInput = document.getElementById('itemName');
+const itemPriceInput = document.getElementById('itemPrice');
+const itemQuantityInput = document.getElementById('itemQuantity');
+const itemTaxInput = document.getElementById('itemTax');
+const addItemButton = document.getElementById('addItem');
+const itemsContainer = document.getElementById('itemsContainer');
+const generateReceiptButton = document.getElementById('generateReceipt');
+const clearAllButton = document.getElementById('clearAll');
+const printReceiptButton = document.getElementById('printReceipt');
+const downloadReceiptButton = document.getElementById('downloadReceipt');
+const logoUpload = document.getElementById('logoUpload');
+
+// Preview elements
+const previewCompanyName = document.getElementById('previewCompanyName');
+const previewCompanyAddress = document.getElementById('previewCompanyAddress');
+const previewCompanyPhone = document.getElementById('previewCompanyPhone');
+const previewReceiptNumber = document.getElementById('previewReceiptNumber');
+const previewDate = document.getElementById('previewDate');
+const previewCustomerName = document.getElementById('previewCustomerName');
+const previewCustomerEmail = document.getElementById('previewCustomerEmail');
+const previewPaymentMethod = document.getElementById('previewPaymentMethod');
+const previewItems = document.getElementById('previewItems');
+const previewSubtotal = document.getElementById('previewSubtotal');
+const previewTax = document.getElementById('previewTax');
+const previewTotal = document.getElementById('previewTotal');
+const logoContainer = document.getElementById('logoContainer');
+
+// Set current date
+const currentDate = new Date();
+const options = { year: 'numeric', month: 'long', day: 'numeric' };
+previewDate.textContent = currentDate.toLocaleDateString('en-US', options);
+
+// Event listeners for form inputs to update preview in real-time
+document.getElementById('companyName').addEventListener('input', function() {
+    previewCompanyName.textContent = this.value;
+});
+
+document.getElementById('companyAddress').addEventListener('input', function() {
+    previewCompanyAddress.textContent = this.value;
+});
+
+document.getElementById('companyPhone').addEventListener('input', function() {
+    previewCompanyPhone.textContent = this.value;
+});
+
+document.getElementById('receiptNumber').addEventListener('input', function() {
+    previewReceiptNumber.textContent = this.value;
+});
+
+document.getElementById('customerName').addEventListener('input', function() {
+    previewCustomerName.textContent = this.value;
+});
+
+document.getElementById('customerEmail').addEventListener('input', function() {
+    previewCustomerEmail.textContent = this.value;
+});
+
+document.getElementById('paymentMethod').addEventListener('change', function() {
+    previewPaymentMethod.textContent = this.value;
+});
+
+// Handle logo upload
+logoUpload.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = document.createElement('img');
+            img.src = event.target.result;
+            img.classList.add('logo-preview');
+            logoContainer.innerHTML = '';
+            logoContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Add item to the list
+addItemButton.addEventListener('click', function() {
+    const name = itemNameInput.value.trim();
+    const price = parseFloat(itemPriceInput.value);
+    const quantity = parseInt(itemQuantityInput.value);
+    const tax = parseFloat(itemTaxInput.value);
+    
+    if (!name || isNaN(price) || price <= 0 || isNaN(quantity) || quantity <= 0) {
+        alert('Please enter valid item details');
+        return;
+    }
+    
+    const item = {
+        id: Date.now(),
+        name,
+        price,
+        quantity,
+        tax
+    };
+    
+    items.push(item);
+    renderItems();
+    updateReceiptPreview();
+    
+    // Clear input fields
+    itemNameInput.value = '';
+    itemPriceInput.value = '';
+    itemQuantityInput.value = '1';
+    itemTaxInput.value = '10';
+    itemNameInput.focus();
+});
+
+// Remove item from the list
+function removeItem(id) {
+    items = items.filter(item => item.id !== id);
+    renderItems();
+    updateReceiptPreview();
+}
+
+// Render items in the list
+function renderItems() {
+    itemsContainer.innerHTML = '';
+    
+    if (items.length === 0) {
+        const emptyRow = document.createElement('div');
+        emptyRow.className = 'item-row';
+        emptyRow.innerHTML = '<div colspan="5" style="text-align: center; grid-column: 1 / -1;">No items added yet</div>';
+        itemsContainer.appendChild(emptyRow);
+        return;
+    }
+    
+    items.forEach(item => {
+        const itemRow = document.createElement('div');
+        itemRow.className = 'item-row';
+        
+        const total = (item.price * item.quantity * (1 + item.tax / 100)).toFixed(2);
+        
+        itemRow.innerHTML = `
+            <div>${item.name}</div>
+            <div>$${item.price.toFixed(2)}</div>
+            <div>${item.quantity}</div>
+            <div>$${total}</div>
+            <button class="remove-item" onclick="removeItem(${item.id})">×</button>
+        `;
+        
+        itemsContainer.appendChild(itemRow);
+    });
+}
+
+// Update receipt preview
+function updateReceiptPreview() {
+    previewItems.innerHTML = '';
+    
+    let subtotal = 0;
+    let totalTax = 0;
+    
+    items.forEach(item => {
+        const itemSubtotal = item.price * item.quantity;
+        const itemTax = itemSubtotal * (item.tax / 100);
+        const itemTotal = itemSubtotal + itemTax;
+        
+        subtotal += itemSubtotal;
+        totalTax += itemTax;
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${item.name}</td>
+            <td>$${item.price.toFixed(2)}</td>
+            <td>${item.quantity}</td>
+            <td class="text-right">$${itemTotal.toFixed(2)}</td>
+        `;
+        
+        previewItems.appendChild(row);
+    });
+    
+    const total = subtotal + totalTax;
+    
+    previewSubtotal.textContent = subtotal.toFixed(2);
+    previewTax.textContent = totalTax.toFixed(2);
+    previewTotal.textContent = total.toFixed(2);
+}
+
+// Generate receipt
+generateReceiptButton.addEventListener('click', function() {
+    if (items.length === 0) {
+        alert('Please add at least one item to generate a receipt');
+        return;
+    }
+    
+    updateReceiptPreview();
+    alert('Receipt generated successfully!');
+});
+
+// Clear all items
+clearAllButton.addEventListener('click', function() {
+    if (confirm('Are you sure you want to clear all items?')) {
+        items = [];
+        renderItems();
+        updateReceiptPreview();
+    }
+});
+
+// Print receipt
+printReceiptButton.addEventListener('click', function() {
+    if (items.length === 0) {
+        alert('Please generate a receipt first');
+        return;
+    }
+    
+    const receiptContent = document.getElementById('receiptPreview').innerHTML;
+    const originalContent = document.body.innerHTML;
+    
+    document.body.innerHTML = receiptContent;
+    window.print();
+    document.body.innerHTML = originalContent;
+    
+    // Re-initialize event listeners after printing
+    initializeEventListeners();
+});
+
+// Download as PDF (simulated)
+downloadReceiptButton.addEventListener('click', function() {
+    if (items.length === 0) {
+        alert('Please generate a receipt first');
+        return;
+    }
+    
+    alert('In a real implementation, this would download the receipt as a PDF file. For this demo, we\'re simulating the download.');
+    
+    // In a real implementation, you would use a library like jsPDF
+    // to generate and download the PDF
+});
+
+// Initialize event listeners (needed after printing)
+function initializeEventListeners() {
+    // Re-attach event listeners here if needed after printing
+}
+
+// Initial render
+renderItems();
