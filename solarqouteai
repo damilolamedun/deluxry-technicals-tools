@@ -1,0 +1,1943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deluxury Technicals - Advanced Solar Quote Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(to bottom, #f9f9f9, #eee);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .company-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 36px;
+            color: #2E86C1;
+            margin-bottom: 5px;
+        }
+        
+        .tagline {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+        
+        .generator-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 24px;
+            color: #2c3e50;
+        }
+        
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            background: #2E86C1;
+            color: white;
+            border-bottom: 3px solid #1A5276;
+        }
+        
+        .tab:hover:not(.active) {
+            background: #f0f0f0;
+        }
+        
+        .content {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .config-panel {
+            flex: 1;
+            min-width: 400px;
+            background: white;
+            padding: 25px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .quotation-preview {
+            flex: 2;
+            min-width: 800px;
+            background: white;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 8px 8px;
+            overflow: hidden;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            color: #2E86C1;
+            border-bottom: 2px solid #2E86C1;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Open Sans', sans-serif;
+        }
+        
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .range-value {
+            min-width: 60px;
+            text-align: center;
+            font-weight: 600;
+            color: #2E86C1;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .checkbox-group input {
+            width: auto;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #2E86C1;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #7f8c8d;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .quotation-container {
+            width: 100%;
+            min-height: 297mm;
+            background: white;
+        }
+        
+        .quotation-header {
+            background: linear-gradient(to right, #2E86C1, #1A5276);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .quotation-company-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 32px;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+        
+        .quotation-tagline {
+            font-style: italic;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        
+        .quotation-document-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 22px;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.15);
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 30px;
+        }
+        
+        .quotation-content {
+            padding: 30px;
+        }
+        
+        .quotation-section {
+            margin-bottom: 25px;
+        }
+        
+        .quotation-section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            color: #2E86C1;
+            border-bottom: 2px solid #2E86C1;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .system-overview {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2E86C1;
+            margin-bottom: 25px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #2E86C1;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .total-box {
+            background: linear-gradient(to right, #2E86C1, #1A5276);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 25px;
+            text-align: center;
+        }
+        
+        .grand-total {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .notes {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 8px;
+        }
+        
+        .benefits-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .benefit-box {
+            flex: 1 1 calc(50% - 15px);
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2E86C1;
+        }
+        
+        .benefit-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            color: #2E86C1;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .quotation-footer {
+            text-align: center;
+            padding: 25px;
+            background: #f8f9fa;
+            border-top: 1px solid #ddd;
+            margin-top: 30px;
+        }
+        
+        .contact-info {
+            font-size: 16px;
+            margin: 10px 0;
+            font-weight: 600;
+            color: #2E86C1;
+        }
+        
+        .whatsapp-badge {
+            display: inline-block;
+            background: #25D366;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .warranty-box {
+            background: #e8f4fc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px dashed #2E86C1;
+            margin: 20px 0;
+        }
+        
+        .power-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .power-item {
+            background: #e8f4fc;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .customer-details {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .customer-field {
+            flex: 1;
+        }
+        
+        .component-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .component-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .component-item:last-child {
+            border-bottom: none;
+        }
+        
+        .component-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .component-price {
+            width: 100px;
+        }
+        
+        .suggestion-box {
+            background: #e8f4fc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2E86C1;
+        }
+        
+        .suggestion-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2E86C1;
+        }
+        
+        .cable-recommendation {
+            background: #e8f6ef;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #27ae60;
+        }
+        
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #2E86C1;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .product-details {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .product-name {
+            flex: 2;
+        }
+        
+        .product-price {
+            flex: 1;
+        }
+        
+        .expiry-date {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .technical-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+        }
+        
+        .technical-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .appliance-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .appliance-item {
+            background: #e8f4fc;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .appliance-wattage {
+            font-weight: 600;
+            color: #2E86C1;
+        }
+        
+        @media (max-width: 1200px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .quotation-preview {
+                min-width: 100%;
+            }
+            
+            .customer-details {
+                flex-direction: column;
+            }
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #2E86C1;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 4px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            display: block;
+            animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(20px); }
+        }
+        
+        .add-item-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .add-item-form input {
+            flex: 1;
+        }
+        
+        .connection-diagram {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .connection-svg {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .battery-config {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .battery-field {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="company-name">DELUXURY TECHNICALS</h1>
+            <p class="tagline">Reliable. Efficient. Future-proof.</p>
+            <h2 class="generator-title">ADVANCED SOLAR QUOTE GENERATOR</h2>
+        </header>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="system-config">System Configuration</div>
+            <div class="tab" data-tab="components">Components & Pricing</div>
+            <div class="tab" data-tab="technical">Technical Details</div>
+        </div>
+        
+        <div class="content">
+            <div class="config-panel">
+                <!-- System Configuration Tab -->
+                <div class="tab-content active" id="system-config">
+                    <div class="section">
+                        <h3 class="section-title">CUSTOMER DETAILS</h3>
+                        <div class="customer-details">
+                            <div class="form-group customer-field">
+                                <label for="customer-name">Customer Name</label>
+                                <input type="text" id="customer-name" placeholder="Enter customer name">
+                            </div>
+                            <div class="form-group customer-field">
+                                <label for="customer-address">Address</label>
+                                <input type="text" id="customer-address" placeholder="Enter customer address">
+                            </div>
+                        </div>
+                        <div class="customer-details">
+                            <div class="form-group customer-field">
+                                <label for="customer-phone">Phone Number</label>
+                                <input type="text" id="customer-phone" placeholder="Enter phone number">
+                            </div>
+                            <div class="form-group customer-field">
+                                <label for="quote-date">Quote Date</label>
+                                <input type="date" id="quote-date">
+                            </div>
+                        </div>
+                        <div class="expiry-date">
+                            <strong>Quote Expiry:</strong> <span id="expiry-date">7 days from today</span>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3 class="section-title">SYSTEM TYPE</h3>
+                        
+                        <div class="form-group">
+                            <label for="system-type">System Type</label>
+                            <select id="system-type">
+                                <option value="hybrid">Hybrid Solar System (With Battery & Solar)</option>
+                                <option value="offgrid">Off-Grid System (Battery Only)</option>
+                                <option value="ongrid">On-Grid System (Grid-Tied, No Battery)</option>
+                                <option value="solar-only">Solar Only (No Battery, Grid Backup)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="toggle-container">
+                            <label for="custom-description">Add Custom Description</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="custom-description">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div id="custom-description-field" style="display: none;">
+                            <div class="form-group">
+                                <label for="system-description">System Description</label>
+                                <textarea id="system-description" placeholder="Enter custom system description"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section" id="inverter-section">
+                        <h3 class="section-title">INVERTER CONFIGURATION</h3>
+                        
+                        <div class="form-group">
+                            <label for="inverter-type">Inverter Type</label>
+                            <select id="inverter-type">
+                                <option value="hybrid">Hybrid Inverter</option>
+                                <option value="offgrid">Off-Grid Inverter</option>
+                                <option value="ongrid">Grid-Tie Inverter</option>
+                                <option value="custom">Custom Inverter</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="inverter-capacity">Inverter Capacity (kVA)</label>
+                            <select id="inverter-capacity">
+                                <option value="3">3 kVA</option>
+                                <option value="5">5 kVA</option>
+                                <option value="8">8 kVA</option>
+                                <option value="10">10 kVA</option>
+                                <option value="12" selected>12 kVA</option>
+                                <option value="15">15 kVA</option>
+                                <option value="20">20 kVA</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="inverter-count">Number of Inverters</label>
+                            <input type="number" id="inverter-count" min="1" max="5" value="1">
+                        </div>
+                        
+                        <div class="product-details">
+                            <div class="form-group product-name">
+                                <label for="inverter-brand">Inverter Brand/Model</label>
+                                <input type="text" id="inverter-brand" placeholder="e.g., Growatt, Must, etc.">
+                            </div>
+                            <div class="form-group product-price">
+                                <label for="inverter-price">Price per Unit (₦)</label>
+                                <input type="number" id="inverter-price" min="0" value="1350000">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section" id="battery-section">
+                        <h3 class="section-title">BATTERY CONFIGURATION</h3>
+                        
+                        <div class="form-group">
+                            <label for="battery-type">Battery Type</label>
+                            <select id="battery-type">
+                                <option value="lithium">Lithium (LiFePO4)</option>
+                                <option value="tubular">Tubular Lead Acid</option>
+                                <option value="agm">AGM</option>
+                                <option value="gel">Gel</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                        
+                        <div class="battery-config">
+                            <div class="form-group battery-field">
+                                <label for="battery-capacity">Battery Capacity (kWh)</label>
+                                <select id="battery-capacity">
+                                    <option value="2.4">2.4 kWh</option>
+                                    <option value="5">5 kWh</option>
+                                    <option value="10">10 kWh</option>
+                                    <option value="15" selected>15 kWh</option>
+                                    <option value="20">20 kWh</option>
+                                    <option value="25">25 kWh</option>
+                                </select>
+                            </div>
+                            <div class="form-group battery-field">
+                                <label for="battery-voltage">Battery Voltage (V)</label>
+                                <select id="battery-voltage">
+                                    <option value="12">12V</option>
+                                    <option value="24">24V</option>
+                                    <option value="48" selected>48V</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="battery-count">Number of Batteries</label>
+                            <input type="number" id="battery-count" min="1" max="20" value="4">
+                        </div>
+                        
+                        <div class="product-details">
+                            <div class="form-group product-name">
+                                <label for="battery-brand">Battery Brand/Model</label>
+                                <input type="text" id="battery-brand" placeholder="e.g., Pylontech, Narada, etc.">
+                            </div>
+                            <div class="form-group product-price">
+                                <label for="battery-price">Price per Unit (₦)</label>
+                                <input type="number" id="battery-price" min="0" value="592500">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section" id="solar-section">
+                        <h3 class="section-title">SOLAR PANEL CONFIGURATION</h3>
+                        
+                        <div class="toggle-container">
+                            <label for="auto-sizing">Automatic Panel Calculation</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="auto-sizing" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="panel-wattage">Panel Wattage</label>
+                            <select id="panel-wattage">
+                                <option value="330">330W</option>
+                                <option value="400">400W</option>
+                                <option value="450">450W</option>
+                                <option value="500">500W</option>
+                                <option value="550" selected>550W</option>
+                                <option value="600">600W</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="panel-count">Number of Solar Panels</label>
+                            <div class="range-container">
+                                <input type="range" id="panel-count" min="2" max="30" step="1" value="10">
+                                <span class="range-value" id="panel-count-value">10</span>
+                            </div>
+                        </div>
+                        
+                        <div class="suggestion-box" id="panel-suggestion">
+                            <div class="suggestion-title">Panel Suggestion</div>
+                            <p>Based on your battery capacity, we recommend <strong id="suggested-panels">10</strong> panels for optimal performance.</p>
+                            <p>Calculation: <span id="panel-calculation">(15 kWh × 4.4) / 550W = 10 panels</span></p>
+                            <button class="btn btn-success" id="apply-suggestion">
+                                <i class="fas fa-check"></i> Apply Suggestion
+                            </button>
+                        </div>
+                        
+                        <div class="product-details">
+                            <div class="form-group product-name">
+                                <label for="panel-brand">Panel Brand/Model</label>
+                                <input type="text" id="panel-brand" placeholder="e.g., Jinko, Longi, etc.">
+                            </div>
+                            <div class="form-group product-price">
+                                <label for="panel-price">Price per Panel (₦)</label>
+                                <input type="number" id="panel-price" min="0" value="120000">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section" id="charge-controller-section" style="display: none;">
+                        <h3 class="section-title">CHARGE CONTROLLER</h3>
+                        
+                        <div class="form-group">
+                            <label for="charge-controller-type">Charge Controller Type</label>
+                            <select id="charge-controller-type">
+                                <option value="mppt">MPPT</option>
+                                <option value="pwm">PWM</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="charge-controller-amps">Charge Controller Amperage</label>
+                            <select id="charge-controller-amps">
+                                <option value="30">30A</option>
+                                <option value="40">40A</option>
+                                <option value="50">50A</option>
+                                <option value="60">60A</option>
+                                <option value="80">80A</option>
+                                <option value="100">100A</option>
+                            </select>
+                        </div>
+                        
+                        <div class="product-details">
+                            <div class="form-group product-name">
+                                <label for="charge-controller-brand">Charge Controller Brand/Model</label>
+                                <input type="text" id="charge-controller-brand" placeholder="e.g., Victron, Epever, etc.">
+                            </div>
+                            <div class="form-group product-price">
+                                <label for="charge-controller-price">Price (₦)</label>
+                                <input type="number" id="charge-controller-price" min="0" value="85000">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Components & Pricing Tab -->
+                <div class="tab-content" id="components">
+                    <div class="section">
+                        <h3 class="section-title">SYSTEM COMPONENTS</h3>
+                        
+                        <div class="component-list" id="component-list">
+                            <!-- Components will be dynamically added here -->
+                        </div>
+                        
+                        <div class="add-item-form">
+                            <input type="text" id="new-item-name" placeholder="New item name">
+                            <input type="number" id="new-item-price" placeholder="Price" min="0">
+                            <button class="btn btn-success" id="add-item">
+                                <i class="fas fa-plus"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3 class="section-title">WORKMANSHIP</h3>
+                        <div class="form-group">
+                            <label for="workmanship-cost">Workmanship Cost (₦)</label>
+                            <input type="number" id="workmanship-cost" value="270000" min="0">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Technical Details Tab -->
+                <div class="tab-content" id="technical">
+                    <div class="section">
+                        <h3 class="section-title">WIRING CALCULATIONS</h3>
+                        
+                        <div class="cable-recommendation">
+                            <div class="suggestion-title">Cable Sizing Recommendations</div>
+                            <p>Based on your system configuration:</p>
+                            <ul>
+                                <li><strong>Solar Panel Cables:</strong> <span id="solar-cable">6mm²</span></li>
+                                <li><strong>Battery Cables:</strong> <span id="battery-cable">35mm²</span></li>
+                                <li><strong>AC Output Cables:</strong> <span id="ac-cable">10mm²</span></li>
+                                <li><strong>Grounding Cable:</strong> <span id="ground-cable">16mm²</span></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="technical-box">
+                            <div class="technical-title">Wire Calculation Formula</div>
+                            <p>Wire size (mm²) = (2 × Current × Length × Resistivity) / Voltage Drop</p>
+                            <p>Where:</p>
+                            <ul>
+                                <li>Current (A) = Power (W) / Voltage (V)</li>
+                                <li>Length = Distance in meters (one way)</li>
+                                <li>Resistivity of copper = 0.0172 Ω·mm²/m</li>
+                                <li>Voltage Drop = Typically 3% of system voltage</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3 class="section-title">CONNECTION DIAGRAM</h3>
+                        
+                        <div class="connection-diagram" id="connection-diagram">
+                            <!-- Connection diagram will be generated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3 class="section-title">LOAD CALCULATION & RUNTIME</h3>
+                        
+                        <div class="appliance-list" id="appliance-list">
+                            <!-- Appliances will be dynamically added here -->
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="total-load">Total Load (Watts)</label>
+                            <input type="number" id="total-load" min="0" value="0" readonly>
+                        </div>
+                        
+                        <div class="technical-box">
+                            <div class="technical-title">Runtime Calculation</div>
+                            <p>With <span id="runtime-load">0W</span> load (90% of inverter capacity):</p>
+                            <p>Estimated Runtime: <span id="estimated-runtime">0 hours</span></p>
+                            <p>Calculation: (Battery Capacity × Battery Voltage × Efficiency) / Load Power</p>
+                        </div>
+                    </div>
+                    
+                    <div class="actions">
+                        <button class="btn btn-primary" id="generate-technical-pdf">
+                            <i class="fas fa-file-pdf"></i> Generate Technical Sheet
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <button class="btn btn-primary" id="generate-pdf">
+                        <i class="fas fa-file-pdf"></i> Generate Quotation PDF
+                    </button>
+                    <button class="btn btn-secondary" id="generate-image">
+                        <i class="fas fa-file-image"></i> Generate Quotation Image
+                    </button>
+                </div>
+            </div>
+            
+            <div class="quotation-preview">
+                <div class="quotation-container" id="quotation-content">
+                    <!-- Quotation content will be generated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast">PDF generated successfully!</div>
+
+    <script>
+        // Default components with prices
+        let components = [
+            { id: 1, name: "DC & AC Surge Protection Devices (SPDs)", price: 26000, category: "safety" },
+            { id: 2, name: "DC MCBs (x2 units)", price: 20000, category: "safety" },
+            { id: 3, name: "AC MCBs (x2 units)", price: 18000, category: "safety" },
+            { id: 4, name: "Automatic Voltage Switch (AVS x2)", price: 24000, category: "safety" },
+            { id: 5, name: "Overload Breaker", price: 15000, category: "safety" },
+            { id: 6, name: "Double Gang Breaker", price: 38000, category: "safety" },
+            { id: 7, name: "Panel Rails, Couplers & Mounting Accessories", price: 65000, category: "mounting" },
+            { id: 8, name: "Quality Solar Cabling", price: 81400, category: "cabling" },
+            { id: 9, name: "Trunking & Roof Plastering", price: 15000, category: "finishing" },
+            { id: 10, name: "Earthing Kit", price: 25000, category: "safety" },
+            { id: 11, name: "Lightning Arrester", price: 35000, category: "safety" },
+            { id: 12, name: "Battery Rack/Enclosure", price: 45000, category: "mounting" },
+            { id: 13, name: "Inverter Mounting Bracket", price: 15000, category: "mounting" }
+        ];
+
+        // Common appliances with wattage
+        const appliances = [
+            { name: "LED Light", wattage: 10, count: 0 },
+            { name: "Ceiling Fan", wattage: 75, count: 0 },
+            { name: "TV (32-inch LED)", wattage: 50, count: 0 },
+            { name: "Refrigerator", wattage: 150, count: 0 },
+            { name: "AC (1.5HP)", wattage: 1300, count: 0 },
+            { name: "AC (2HP)", wattage: 1800, count: 0 },
+            { name: "Computer", wattage: 200, count: 0 },
+            { name: "Water Pump", wattage: 750, count: 0 },
+            { name: "Washing Machine", wattage: 500, count: 0 },
+            { name: "Microwave", wattage: 1000, count: 0 }
+        ];
+
+        // DOM elements
+        const panelCountSlider = document.getElementById('panel-count');
+        const panelCountValue = document.getElementById('panel-count-value');
+        const quotationContent = document.getElementById('quotation-content');
+        const generatePdfBtn = document.getElementById('generate-pdf');
+        const generateImageBtn = document.getElementById('generate-image');
+        const generateTechnicalPdfBtn = document.getElementById('generate-technical-pdf');
+        const toast = document.getElementById('toast');
+        const componentList = document.getElementById('component-list');
+        const addItemBtn = document.getElementById('add-item');
+        const autoSizingToggle = document.getElementById('auto-sizing');
+        const panelSuggestionBox = document.getElementById('panel-suggestion');
+        const cableRecommendationBox = document.getElementById('cable-recommendation');
+        const applySuggestionBtn = document.getElementById('apply-suggestion');
+        const suggestedPanelsElement = document.getElementById('suggested-panels');
+        const panelCalculationElement = document.getElementById('panel-calculation');
+        const solarCableElement = document.getElementById('solar-cable');
+        const batteryCableElement = document.getElementById('battery-cable');
+        const acCableElement = document.getElementById('ac-cable');
+        const groundCableElement = document.getElementById('ground-cable');
+        const systemTypeSelect = document.getElementById('system-type');
+        const customDescriptionToggle = document.getElementById('custom-description');
+        const customDescriptionField = document.getElementById('custom-description-field');
+        const inverterSection = document.getElementById('inverter-section');
+        const batterySection = document.getElementById('battery-section');
+        const solarSection = document.getElementById('solar-section');
+        const chargeControllerSection = document.getElementById('charge-controller-section');
+        const applianceListElement = document.getElementById('appliance-list');
+        const totalLoadElement = document.getElementById('total-load');
+        const runtimeLoadElement = document.getElementById('runtime-load');
+        const estimatedRuntimeElement = document.getElementById('estimated-runtime');
+        const connectionDiagramElement = document.getElementById('connection-diagram');
+        const expiryDateElement = document.getElementById('expiry-date');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date as default
+            const today = new Date();
+            document.getElementById('quote-date').valueAsDate = today;
+            
+            // Set expiry date (7 days from today)
+            const expiryDate = new Date(today);
+            expiryDate.setDate(expiryDate.getDate() + 7);
+            expiryDateElement.textContent = expiryDate.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            // Update panel count display
+            panelCountValue.textContent = panelCountSlider.value;
+            
+            // Render components list
+            renderComponents();
+            
+            // Render appliances list
+            renderAppliances();
+            
+            // Generate initial quotation
+            updateQuotation();
+            updateSystemSuggestions();
+            updateConnectionDiagram();
+            updateLoadCalculation();
+            
+            // Add event listeners
+            panelCountSlider.addEventListener('input', function() {
+                panelCountValue.textContent = this.value;
+                if (!autoSizingToggle.checked) {
+                    updateQuotation();
+                }
+            });
+            
+            const configInputs = document.querySelectorAll('#inverter-capacity, #battery-capacity, #panel-wattage, #workmanship-cost, #customer-name, #customer-address, #customer-phone, #quote-date, #inverter-count, #battery-count, #inverter-price, #battery-price, #panel-price, #battery-voltage, #charge-controller-price');
+            configInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    updateQuotation();
+                    if (autoSizingToggle.checked && (this.id === 'battery-capacity' || this.id === 'panel-wattage')) {
+                        updateSystemSuggestions();
+                    }
+                    if (this.id === 'inverter-capacity' || this.id === 'battery-capacity' || this.id === 'battery-voltage') {
+                        updateLoadCalculation();
+                        updateConnectionDiagram();
+                        updateCableRecommendations();
+                    }
+                });
+            });
+            
+            const configSelects = document.querySelectorAll('#inverter-capacity, #battery-capacity, #panel-wattage, #system-type, #inverter-type, #battery-type, #battery-voltage, #charge-controller-type, #charge-controller-amps');
+            configSelects.forEach(select => {
+                select.addEventListener('change', function() {
+                    if (autoSizingToggle.checked && (this.id === 'battery-capacity' || this.id === 'panel-wattage')) {
+                        updateSystemSuggestions();
+                    }
+                    if (this.id === 'system-type') {
+                        updateSystemVisibility();
+                    }
+                    updateQuotation();
+                    updateLoadCalculation();
+                    updateConnectionDiagram();
+                    updateCableRecommendations();
+                });
+            });
+            
+            const productInputs = document.querySelectorAll('#inverter-brand, #battery-brand, #panel-brand, #charge-controller-brand');
+            productInputs.forEach(input => {
+                input.addEventListener('input', updateQuotation);
+            });
+            
+            autoSizingToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    updateSystemSuggestions();
+                }
+            });
+            
+            customDescriptionToggle.addEventListener('change', function() {
+                customDescriptionField.style.display = this.checked ? 'block' : 'none';
+                updateQuotation();
+            });
+            
+            document.getElementById('system-description').addEventListener('input', updateQuotation);
+            
+            addItemBtn.addEventListener('click', addNewComponent);
+            
+            applySuggestionBtn.addEventListener('click', applyPanelSuggestion);
+            
+            generatePdfBtn.addEventListener('click', generatePdf);
+            generateImageBtn.addEventListener('click', generateImage);
+            generateTechnicalPdfBtn.addEventListener('click', generateTechnicalPdf);
+            
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show active tab content
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Initialize system visibility
+            updateSystemVisibility();
+        });
+
+        // Update system component visibility based on system type
+        function updateSystemVisibility() {
+            const systemType = systemTypeSelect.value;
+            
+            // Show/hide sections based on system type
+            inverterSection.style.display = 'block';
+            batterySection.style.display = (systemType === 'ongrid') ? 'none' : 'block';
+            solarSection.style.display = (systemType === 'offgrid') ? 'none' : 'block';
+            chargeControllerSection.style.display = (systemType === 'offgrid' || systemType === 'solar-only') ? 'block' : 'none';
+        }
+
+        // Render components list
+        function renderComponents() {
+            componentList.innerHTML = '';
+            
+            components.forEach(component => {
+                const componentElement = document.createElement('div');
+                componentElement.className = 'component-item';
+                componentElement.innerHTML = `
+                    <div>
+                        <div><strong>${component.name}</strong></div>
+                        <div class="notes">${component.category}</div>
+                    </div>
+                    <div class="component-controls">
+                        <input type="number" class="component-price" value="${component.price}" min="0" data-id="${component.id}">
+                        <button class="btn btn-danger remove-component" data-id="${component.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                componentList.appendChild(componentElement);
+            });
+            
+            // Add event listeners to component price inputs
+            const priceInputs = document.querySelectorAll('.component-price');
+            priceInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    updateComponentPrice(id, parseInt(this.value) || 0);
+                    updateQuotation();
+                });
+            });
+            
+            // Add event listeners to remove buttons
+            const removeButtons = document.querySelectorAll('.remove-component');
+            removeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    removeComponent(id);
+                });
+            });
+        }
+
+        // Render appliances list
+        function renderAppliances() {
+            applianceListElement.innerHTML = '';
+            
+            appliances.forEach((appliance, index) => {
+                const applianceElement = document.createElement('div');
+                applianceElement.className = 'appliance-item';
+                applianceElement.innerHTML = `
+                    <span>${appliance.name}</span>
+                    <span class="appliance-wattage">${appliance.wattage}W</span>
+                    <input type="number" min="0" max="10" value="${appliance.count}" data-index="${index}" class="appliance-count" style="width: 60px;">
+                `;
+                applianceListElement.appendChild(applianceElement);
+            });
+            
+            // Add event listeners to appliance count inputs
+            const countInputs = document.querySelectorAll('.appliance-count');
+            countInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    appliances[index].count = parseInt(this.value) || 0;
+                    updateLoadCalculation();
+                });
+            });
+        }
+
+        // Update component price
+        function updateComponentPrice(id, price) {
+            const component = components.find(c => c.id === id);
+            if (component) {
+                component.price = price;
+            }
+        }
+
+        // Remove component
+        function removeComponent(id) {
+            components = components.filter(c => c.id !== id);
+            renderComponents();
+            updateQuotation();
+        }
+
+        // Add new component
+        function addNewComponent() {
+            const nameInput = document.getElementById('new-item-name');
+            const priceInput = document.getElementById('new-item-price');
+            
+            const name = nameInput.value.trim();
+            const price = parseInt(priceInput.value) || 0;
+            
+            if (!name) {
+                alert('Please enter a component name');
+                return;
+            }
+            
+            // Generate a new ID
+            const newId = components.length > 0 ? Math.max(...components.map(c => c.id)) + 1 : 1;
+            
+            components.push({
+                id: newId,
+                name: name,
+                price: price,
+                category: 'custom'
+            });
+            
+            renderComponents();
+            updateQuotation();
+            
+            // Clear inputs
+            nameInput.value = '';
+            priceInput.value = '';
+            
+            showToast('Component added successfully!');
+        }
+
+        // Update system suggestions based on configuration
+        function updateSystemSuggestions() {
+            const batteryratingg = parseFloat(document.getElementById('battery-capacity').value);
+            const panelWattage = parseInt(document.getElementById('panel-wattage').value);
+           const  batteryCount =  parseInt(document.getElementById('battery-count').value);
+            const batteryCapacity = batteryratingg * batteryCount
+            // Calculate suggested panel count based on battery capacity
+            // Using 4.4W per 1Wh rule  600W×4h×0.8
+            const panelnum = panelWattage * 2.8 * 0.8;
+            const requiredWattage = batteryCapacity * 1000 ; // Convert kWh to Wh and apply 4.4W/Wh
+            const suggestedPanels = Math.ceil(requiredWattage / panelnum);
+            
+            // Ensure at least 2 panels
+            const finalSuggestion = Math.max(2, suggestedPanels);
+            
+            suggestedPanelsElement.textContent = finalSuggestion;
+            panelCalculationElement.textContent = `(${batteryCapacity} kWh × 4.4) / ${panelWattage}W = ${finalSuggestion} panels`;
+            
+            // Update cable recommendations based on system size
+            updateCableRecommendations();
+        }
+
+        // Update cable recommendations
+        function updateCableRecommendations() {
+            const inverterCapacity = parseInt(document.getElementById('inverter-capacity').value);
+            const batteryCapacity = parseFloat(document.getElementById('battery-capacity').value);
+            const batteryVoltage = parseInt(document.getElementById('battery-voltage').value);
+            const panelCount = parseInt(document.getElementById('panel-count').value);
+            const panelWattage = parseInt(document.getElementById('panel-wattage').value);
+            
+            // Calculate currents
+            const inverterPower = inverterCapacity * 1000; // Convert kVA to W (approximation)
+            const batteryCurrent = (inverterPower / batteryVoltage) * 1.25; // Add 25% safety margin
+            
+            // Solar panel cable sizing based on current
+            const panelCurrent = (panelWattage * panelCount) / batteryVoltage;
+            let solarCable = '4mm²';
+            if (panelCurrent > 15) solarCable = '6mm²';
+            if (panelCurrent > 25) solarCable = '10mm²';
+            if (panelCurrent > 40) solarCable = '16mm²';
+            if (panelCurrent > 60) solarCable = '25mm²';
+            
+            // Battery cable sizing based on current
+            let batteryCable = '16mm²';
+            if (batteryCurrent > 80) batteryCable = '25mm²';
+            if (batteryCurrent > 120) batteryCable = '35mm²';
+            if (batteryCurrent > 160) batteryCable = '50mm²';
+            if (batteryCurrent > 200) batteryCable = '70mm²';
+            
+            // AC cable sizing based on inverter capacity
+            let acCable = '4mm²';
+            if (inverterCapacity > 5) acCable = '6mm²';
+            if (inverterCapacity > 10) acCable = '10mm²';
+            if (inverterCapacity > 15) acCable = '16mm²';
+            
+            // Grounding cable (typically half of AC cable size)
+            let groundCable = '6mm²';
+            if (inverterCapacity > 10) groundCable = '10mm²';
+            if (inverterCapacity > 15) groundCable = '16mm²';
+            
+            solarCableElement.textContent = solarCable;
+            batteryCableElement.textContent = batteryCable;
+            acCableElement.textContent = acCable;
+            groundCableElement.textContent = groundCable;
+        }
+
+        // Update load calculation and runtime
+        function updateLoadCalculation() {
+            // Calculate total load
+            let totalLoad = 0;
+            appliances.forEach(appliance => {
+                totalLoad += appliance.wattage * appliance.count;
+            });
+            
+            totalLoadElement.value = totalLoad;
+            
+            // Calculate runtime with 90% inverter load
+            const inverterCapacity = parseInt(document.getElementById('inverter-capacity').value);
+            const batteryCapacity = parseFloat(document.getElementById('battery-capacity').value);
+            const batteryVoltage = parseInt(document.getElementById('battery-voltage').value);
+            
+            const runtimeLoad = inverterCapacity * 1000 * 0.9; // 90% of inverter capacity
+            runtimeLoadElement.textContent = runtimeLoad.toLocaleString() + 'W';
+            
+            // Calculate runtime in hours
+            // Battery energy in Wh = capacity (kWh) * 1000
+            // Runtime (hours) = (Battery energy * efficiency) / load power
+            const batteryEnergy = batteryCapacity * 1000; // Convert kWh to Wh
+            const efficiency = 0.85; // 85% system efficiency
+            const runtime = (batteryEnergy * efficiency) / runtimeLoad;
+            
+            estimatedRuntimeElement.textContent = runtime.toFixed(1) + ' hours';
+        }
+
+        // Update connection diagram
+        function updateConnectionDiagram() {
+            const systemType = systemTypeSelect.value;
+            const inverterType = document.getElementById('inverter-type').value;
+            const batteryType = document.getElementById('battery-type').value;
+            const batteryVoltage = document.getElementById('battery-voltage').value;
+            
+            let diagramHTML = '';
+            
+            if (systemType === 'hybrid') {
+                diagramHTML = `
+                    <div class="technical-title">Hybrid System Connection Diagram</div>
+                    <p>Solar Panels → Charge Controller (MPPT) → Battery Bank → Hybrid Inverter → Load Panel</p>
+                    <p>Grid Connection → Hybrid Inverter → Load Panel</p>
+                    <div style="display: flex; justify-content: center; margin: 20px 0;">
+                        <div style="text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin: 0 10px;">
+                            <div>Solar Panels</div>
+                            <div>↓</div>
+                            <div>MPPT Controller</div>
+                            <div>↓</div>
+                            <div>Battery Bank (${batteryVoltage}V)</div>
+                            <div>↓</div>
+                            <div>Hybrid Inverter</div>
+                            <div>↓</div>
+                            <div>Load Panel</div>
+                        </div>
+                        <div style="text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin: 0 10px;">
+                            <div>Grid Supply</div>
+                            <div>↓</div>
+                            <div>Hybrid Inverter</div>
+                        </div>
+                    </div>
+                `;
+            } else if (systemType === 'offgrid') {
+                diagramHTML = `
+                    <div class="technical-title">Off-Grid System Connection Diagram</div>
+                    <p>Battery Bank → Off-Grid Inverter → Load Panel</p>
+                    <div style="text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin: 20px auto; max-width: 300px;">
+                        <div>Battery Bank (${batteryVoltage}V)</div>
+                        <div>↓</div>
+                        <div>Off-Grid Inverter</div>
+                        <div>↓</div>
+                        <div>Load Panel</div>
+                    </div>
+                `;
+            } else if (systemType === 'ongrid') {
+                diagramHTML = `
+                    <div class="technical-title">Grid-Tie System Connection Diagram</div>
+                    <p>Solar Panels → Grid-Tie Inverter → Main Distribution Board</p>
+                    <div style="text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin: 20px auto; max-width: 300px;">
+                        <div>Solar Panels</div>
+                        <div>↓</div>
+                        <div>Grid-Tie Inverter</div>
+                        <div>↓</div>
+                        <div>Main Distribution Board</div>
+                    </div>
+                `;
+            } else if (systemType === 'solar-only') {
+                diagramHTML = `
+                    <div class="technical-title">Solar-Only System Connection Diagram</div>
+                    <p>Solar Panels → Charge Controller → Load Panel</p>
+                    <div style="text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin: 20px auto; max-width: 300px;">
+                        <div>Solar Panels</div>
+                        <div>↓</div>
+                        <div>Charge Controller</div>
+                        <div>↓</div>
+                        <div>Load Panel</div>
+                    </div>
+                `;
+            }
+            
+            connectionDiagramElement.innerHTML = diagramHTML;
+        }
+
+        // Apply panel suggestion
+        function applyPanelSuggestion() {
+            const suggestedPanels = parseInt(suggestedPanelsElement.textContent);
+            panelCountSlider.value = suggestedPanels;
+            panelCountValue.textContent = suggestedPanels;
+            updateQuotation();
+            showToast('Panel suggestion applied!');
+        }
+
+        // Update quotation preview
+        function updateQuotation() {
+            // Get configuration values
+            const inverterCapacity = document.getElementById('inverter-capacity').value;
+            const batteryCapacity = document.getElementById('battery-capacity').value;
+            const panelCount = document.getElementById('panel-count').value;
+            const panelWattage = document.getElementById('panel-wattage').value;
+            const workmanshipCost = parseInt(document.getElementById('workmanship-cost').value) || 0;
+            const systemType = document.getElementById('system-type').value;
+            const inverterType = document.getElementById('inverter-type').value;
+            const batteryType = document.getElementById('battery-type').value;
+            const batteryVoltage = document.getElementById('battery-voltage').value;
+            const inverterCount = parseInt(document.getElementById('inverter-count').value) || 1;
+            const batteryCount = parseInt(document.getElementById('battery-count').value) || 1;
+            const inverterPrice = parseInt(document.getElementById('inverter-price').value) || 0;
+            const batteryPrice = parseInt(document.getElementById('battery-price').value) || 0;
+            const panelPrice = parseInt(document.getElementById('panel-price').value) || 0;
+            const inverterBrand = document.getElementById('inverter-brand').value;
+            const batteryBrand = document.getElementById('battery-brand').value;
+            const panelBrand = document.getElementById('panel-brand').value;
+            const customDescription = document.getElementById('custom-description').checked;
+            const systemDescription = document.getElementById('system-description').value;
+            
+            const customerName = document.getElementById('customer-name').value;
+            const customerAddress = document.getElementById('customer-address').value;
+            const customerPhone = document.getElementById('customer-phone').value;
+            const quoteDate = document.getElementById('quote-date').value;
+            
+            // Calculate costs
+            const inverterCost = inverterPrice * inverterCount;
+            const batteryCost = batteryPrice * batteryCount;
+            const panelCost = panelPrice * panelCount;
+            
+            let componentsCost = 0;
+            components.forEach(component => {
+                componentsCost += component.price;
+            });
+            
+            // Add charge controller cost if needed
+            let chargeControllerCost = 0;
+            if (systemType === 'offgrid' || systemType === 'solar-only') {
+                chargeControllerCost = parseInt(document.getElementById('charge-controller-price').value) || 0;
+                componentsCost += chargeControllerCost;
+            }
+            
+            const materialsTotal = inverterCost + batteryCost + panelCost + componentsCost;
+            const grandTotal = materialsTotal + workmanshipCost;
+            
+            // Format date
+            const formattedDate = quoteDate ? new Date(quoteDate).toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            }) : new Date().toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            // Generate system description
+            let systemDescriptionText = '';
+            if (customDescription && systemDescription) {
+                systemDescriptionText = systemDescription;
+            } else {
+                systemDescriptionText = `
+                    This ${systemType.replace('-', ' ')} system features a ${inverterCapacity}kVA ${inverterType} inverter 
+                    ${inverterCount > 1 ? `(x${inverterCount} units)` : ''}${batteryCount > 0 ? ` with ${batteryCapacity}kWh ${batteryType} battery bank 
+                    (${batteryCount} units at ${batteryVoltage}V)` : ''}${panelCount > 0 ? ` and ${panelCount} x ${panelWattage}W solar panels` : ''}. 
+                    The system is designed to provide reliable power for essential appliances and electronics.
+                `;
+            }
+            
+            // Generate quotation HTML
+            quotationContent.innerHTML = `
+                <div class="quotation-header">
+                    <h1 class="quotation-company-name">DELUXURY TECHNICALS</h1>
+                    <p class="quotation-tagline">Reliable. Efficient. Future-proof.</p>
+                    <h2 class="quotation-document-title">SOLAR POWER INSTALLATION PROPOSAL</h2>
+                </div>
+
+                <div class="quotation-content">
+                    ${customerName || customerAddress ? `
+                    <div class="quotation-section">
+                        <h3 class="quotation-section-title">CUSTOMER INFORMATION</h3>
+                        <p><strong>Name:</strong> ${customerName || 'Not specified'}</p>
+                        <p><strong>Address:</strong> ${customerAddress || 'Not specified'}</p>
+                        <p><strong>Phone:</strong> ${customerPhone || 'Not specified'}</p>
+                        <p><strong>Quote Date:</strong> ${formattedDate}</p>
+                        <p><strong>Quote Expiry:</strong> <span id="expiry-date-quote">7 days from ${formattedDate}</span></p>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="system-overview">
+                        <h3>System Overview</h3>
+                        <p>${systemDescriptionText}</p>
+                        <p><strong>Power Capability:</strong> This system is designed to carry essential appliances including:</p>
+                        <div class="power-list">
+                            <span class="power-item">Lighting</span>
+                            <span class="power-item">Televisions</span>
+                            <span class="power-item">Refrigerator</span>
+                            <span class="power-item">Fans</span>
+                            <span class="power-item">Computers</span>
+                            <span class="power-item">Other essential appliances</span>
+                        </div>
+                        <p>A durable and reliable solution for your energy needs.</p>
+                    </div>
+
+                    <div class="quotation-section">
+                        <h3 class="quotation-section-title">SYSTEM COMPONENTS & MATERIALS</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Description</th>
+                                    <th class="text-right">Qty</th>
+                                    <th class="text-right">Amount (₦)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${inverterCount > 0 ? `
+                                <tr>
+                                    <td>Inverter</td>
+                                    <td>${inverterCapacity}kVA ${inverterType} ${inverterBrand ? `- ${inverterBrand}` : ''}</td>
+                                    <td class="text-right">${inverterCount}</td>
+                                    <td class="text-right">${formatCurrency(inverterCost)}</td>
+                                </tr>
+                                ` : ''}
+                                ${batteryCount > 0 ? `
+                                <tr>
+                                    <td>Battery</td>
+                                    <td>${batteryCapacity}kWh ${batteryType} ${batteryBrand ? `- ${batteryBrand}` : ''}</td>
+                                    <td class="text-right">${batteryCount}</td>
+                                    <td class="text-right">${formatCurrency(batteryCost)}</td>
+                                </tr>
+                                ` : ''}
+                                ${panelCount > 0 ? `
+                                <tr>
+                                    <td>Solar Panels</td>
+                                    <td>${panelWattage}W ${panelBrand ? `- ${panelBrand}` : ''}</td>
+                                    <td class="text-right">${panelCount}</td>
+                                    <td class="text-right">${formatCurrency(panelCost)}</td>
+                                </tr>
+                                ` : ''}
+                                ${chargeControllerCost > 0 ? `
+                                <tr>
+                                    <td>Charge Controller</td>
+                                    <td>MPPT ${document.getElementById('charge-controller-amps').value}A</td>
+                                    <td class="text-right">1</td>
+                                    <td class="text-right">${formatCurrency(chargeControllerCost)}</td>
+                                </tr>
+                                ` : ''}
+                            </tbody>
+                        </table>
+
+                        <h3 class="quotation-section-title">ACCESSORIES & INSTALLATION MATERIALS</h3>
+                        <table>
+                            ${components.map(component => `
+                            <tr>
+                                <td>${component.name}</td>
+                                <td>${component.category}</td>
+                                <td class="text-right">1</td>
+                                <td class="text-right">${formatCurrency(component.price)}</td>
+                            </tr>
+                            `).join('')}
+                            <tr>
+                                <td><strong>Subtotal: Materials</strong></td>
+                                <td></td>
+                                <td></td>
+                                <td class="text-right"><strong>${formatCurrency(materialsTotal)}</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="quotation-section">
+                        <h3 class="quotation-section-title">PROFESSIONAL WORKMANSHIP</h3>
+                        <p><strong>Installation & Commissioning: ${formatCurrency(workmanshipCost)}</strong></p>
+                        <p>Our trained engineers will handle:</p>
+                        <ul>
+                            <li>Professional installation of all system components</li>
+                            <li>Secure mounting with precision cabling</li>
+                            <li>Proper earthing, surge protection, and system safety tests</li>
+                            <li>Neat trunking and finishing that complements your property</li>
+                            <li>Full system commissioning, with user orientation</li>
+                        </ul>
+                    </div>
+
+                    <div class="total-box">
+                        <p class="grand-total">✅ GRAND TOTAL: ${formatCurrency(grandTotal)}</p>
+                        <p class="notes">(Materials ${formatCurrency(materialsTotal)} + Workmanship ${formatCurrency(workmanshipCost)})</p>
+                    </div>
+
+                    <div class="quotation-section">
+                        <h3 class="quotation-section-title">WHY CHOOSE DELUXURY TECHNICALS?</h3>
+                        <div class="benefits-container">
+                            <div class="benefit-box">
+                                <div class="benefit-title">Expertise</div>
+                                <p>Decades of combined experience in renewable energy installations across Lagos and Nigeria.</p>
+                            </div>
+                            <div class="benefit-box">
+                                <div class="benefit-title">Reliability</div>
+                                <p>We use only quality-certified components and proven installation practices.</p>
+                            </div>
+                            <div class="benefit-box">
+                                <div class="benefit-title">Professional Finish</div>
+                                <p>Every installation is done to international standards, with attention to safety and aesthetics.</p>
+                            </div>
+                            <div class="benefit-box">
+                                <div class="benefit-title">After-Sales Support</div>
+                                <p>We remain available to you long after handover for support and maintenance.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="warranty-box">
+                        <h3 class="quotation-section-title">WARRANTY & SAFETY</h3>
+                        <p>We stand behind our work with a <strong>5-year workmanship warranty</strong> — your peace of mind is guaranteed. This warranty covers all workmanship-related issues.</p>
+                        <p class="notes"><em>Note: While workmanship is guaranteed, external natural disasters such as floods, lightning strikes, or fire incidents beyond our control are excluded. This ensures you enjoy maximum protection and reliability, while we take full responsibility for what we can control — the quality of our installation.</em></p>
+                    </div>
+                </div>
+
+                <div class="quotation-footer">
+                    <p>Thank you for considering Deluxury Technicals for your renewable energy solution.</p>
+                    <div class="contact-info">📞 Contact Us: 08158455663 (Available on WhatsApp)</div>
+                    <div class="whatsapp-badge">WhatsApp Available</div>
+                    <p>© ${new Date().getFullYear()} Deluxury Technicals. All Rights Reserved.</p>
+                </div>
+            `;
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return '₦' + amount.toLocaleString('en-NG');
+        }
+
+        // Generate PDF
+        function generatePdf() {
+            const element = document.getElementById('quotation-content');
+            const opt = {
+                margin: 10,
+                filename: 'deluxury-solar-quotation.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                showToast('Quotation PDF generated successfully!');
+            });
+        }
+
+        // Generate Image
+        function generateImage() {
+            const element = document.getElementById('quotation-content');
+            
+            html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'deluxury-solar-quotation.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showToast('Quotation image generated successfully!');
+            });
+        }
+
+        // Generate Technical PDF
+        function generateTechnicalPdf() {
+            const inverterCapacity = document.getElementById('inverter-capacity').value;
+            const batteryCapacity = document.getElementById('battery-capacity').value;
+            const batteryVoltage = document.getElementById('battery-voltage').value;
+            const panelCount = document.getElementById('panel-count').value;
+            const panelWattage = document.getElementById('panel-wattage').value;
+            const systemType = document.getElementById('system-type').value;
+            
+            // Create technical sheet content
+            const technicalContent = document.createElement('div');
+            technicalContent.className = 'quotation-container';
+            technicalContent.innerHTML = `
+                <div class="quotation-header">
+                    <h1 class="quotation-company-name">DELUXURY TECHNICALS</h1>
+                    <p class="quotation-tagline">Technical Installation Sheet</p>
+                </div>
+
+                <div class="quotation-content">
+                    <div class="quotation-section">
+                        <h3 class="quotation-section-title">SYSTEM SPECIFICATIONS</h3>
+                        <table>
+                            <tr>
+                                <td><strong>System Type</strong></td>
+                                <td>${systemType.replace('-', ' ')}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Inverter Capacity</strong></td>
+                                <td>${inverterCapacity} kVA</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Battery Bank</strong></td>
+                                <td>${batteryCapacity} kWh at ${batteryVoltage}V</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Solar Array</strong></td>
+                                <td>${panelCount} x ${panelWattage}W panels</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Solar Power</strong></td>
+                                <td>${panelCount * panelWattage}W</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="quotation-section">
+                        <h3 class="quotation-section-title">INSTALLATION CHECKLIST</h3>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="check1" disabled>
+                            <label for="check1">Verify all components are delivered and in good condition</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="check2" disabled>
+                            <label for="check2">Check roof structure for panel mounting</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="check3" disabled>
+                            <label for="check3">Install proper earthing system</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="check4" disabled>
+                            <label for="check4">Mount solar panels with correct tilt and orientation</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="check5" disabled>
+                            <label for="check5">Install battery bank with proper ventilation</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="check6" disabled>
+                            <label for="check6">Connect all cables with correct sizing</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="check7" disabled>
+                            <label for="check7">Test system safety features (surge protection, breakers)</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="check8" disabled>
+                            <label for="check8">Commission system and verify proper operation</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="check9" disabled>
+                            <label for="check9">Provide customer orientation and documentation</label>
+                        </div>
+                    </div>
+
+                    <div class="quotation-section">
+                        <h3 class="quotation-section-title">INVERTER SETTINGS</h3>
+                        <div class="technical-box">
+                            <p><strong>Battery Type:</strong> Set to "${document.getElementById('battery-type').value}"</p>
+                            <p><strong>Charging Current:</strong> Max ${Math.floor(parseInt(inverterCapacity) * 1000 / parseInt(batteryVoltage))}A</p>
+                            <p><strong>Cut-off Voltage:</strong> ${batteryVoltage * 0.85}V (for ${batteryType} batteries)</p>
+                            <p><strong>Float Voltage:</strong> ${batteryVoltage * 1.125}V</p>
+                            <p><strong>Equalization:</strong> ${batteryType === 'lithium' ? 'Not required' : 'Every 30 days'}</p>
+                        </div>
+                    </div>
+
+                    <div class="quotation-section">
+                        <h3 class="quotation-section-title">TROUBLESHOOTING GUIDE</h3>
+                        <div class="benefits-container">
+                            <div class="benefit-box">
+                                <div class="benefit-title">Inverter Not Turning On</div>
+                                <p>Check battery connections, battery voltage, and DC breaker status.</p>
+                            </div>
+                            <div class="benefit-box">
+                                <div class="benefit-title">Low Backup Time</div>
+                                <p>Verify battery health, check for excessive load, ensure proper charging.</p>
+                            </div>
+                            <div class="benefit-box">
+                                <div class="benefit-title">Solar Not Charging</div>
+                                <p>Check panel connections, verify sunlight conditions, inspect charge controller.</p>
+                            </div>
+                            <div class="benefit-box">
+                                <div class="benefit-title">Overheating</div>
+                                <p>Ensure proper ventilation, check for dust accumulation, verify load capacity.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quotation-section">
+                        <h3 class="quotation-section-title">SAFETY PRECAUTIONS</h3>
+                        <ul>
+                            <li>Always disconnect AC and DC power before working on the system</li>
+                            <li>Use appropriate personal protective equipment (PPE)</li>
+                            <li>Ensure proper earthing of all system components</li>
+                            <li>Keep batteries away from flammable materials</li>
+                            <li>Regularly inspect cables and connections for wear or damage</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="quotation-footer">
+                    <p>For technical support, contact Deluxury Technicals at 08158455663</p>
+                    <p>© ${new Date().getFullYear()} Deluxury Technicals. All Rights Reserved.</p>
+                </div>
+            `;
+            
+            const opt = {
+                margin: 10,
+                filename: 'deluxury-technical-sheet.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(technicalContent).save().then(() => {
+                showToast('Technical sheet PDF generated successfully!');
+            });
+        }
+
+        // Show toast message
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
